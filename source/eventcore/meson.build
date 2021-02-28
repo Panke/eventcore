@@ -29,6 +29,7 @@ eventcore_src = [
 	'internal/dlist.d',
 	'internal/utils.d',
 	'internal/win32.d',
+	'internal/ioworker.d',
 	'socket.d',
 
 ]
@@ -56,10 +57,11 @@ install_headers(
 
 test_exe = executable(
 	'eventcore_test',
-	eventcore_src,
+	['core.d'],
 	include_directories: include_directories('../'),
 	d_unittest: true,
-	d_args: '-main',
+	d_args: '-i',
+	link_args: '-main',
 	dependencies: taggedalgebraic_dep,
 )
 
