@@ -15,7 +15,7 @@ import eventcore.drivers.posix.io_uring.files;
 import eventcore.driver;
 
 import std.datetime.stopwatch;
-
+import std.functional : toDelegate;
 void main()
 {
 	StopWatch sw;
@@ -23,7 +23,14 @@ void main()
 	auto drv = new EpollEventDriver();
 	auto files = drv.files;
 
-	auto fd = files.open("/tmp/testfile", FileOpenMode.createTrunc);
+	FileFD fd;
+	files.open("/tmp/testfileasync", FileOpenMode.createTrunc,
+		(FileFD result, IOStatus status) {
+			if (status == IOStatus.ok)
+				fd = result;
+		});
+	ExitReason r = drv.core.processEvents(Duration.max);
+	writefln("after open: fd = %s", fd);
 	assert (files.isValid(fd));
 	files.write(fd, 0, "this is a testwrite".representation, IOMode.init,
 		(FileFD file, IOStatus status, size_t written)
@@ -32,7 +39,7 @@ void main()
 			catch(Exception e) {}
 		}
 	);
-	ExitReason r = drv.core.processEvents(Duration.max);
+	r = drv.core.processEvents(Duration.max);
 	writeln(r);
 	//assert (r == ExitReason.idle);
 	ubyte[256] buffer;
