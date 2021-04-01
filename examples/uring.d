@@ -2,7 +2,7 @@
 	name "uring-example"
 	description "this does nothing, but also does not crash"
 	dependency "eventcore" path=".."
-	versions "UringEventLoopDebug"
+	versions "UringEventLoopDebug" "EventcoreEpollUsesUring"
 	debugVersions "UringEventLoopDebug"
 +/
 import std.stdio;
